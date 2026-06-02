@@ -17,7 +17,7 @@ public class JwtService {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private long JWT_EXPIRATION;
+    private long expiration;
 
     //gerar e validar token
     public String gerarToken(UserDetails userDetails) {
@@ -25,7 +25,7 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(
-                        System.currentTimeMillis() + JWT_EXPIRATION)
+                        System.currentTimeMillis() + expiration)
                 )
                 .signWith(getSigningKey())
                 .compact();

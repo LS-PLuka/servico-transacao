@@ -1,10 +1,7 @@
 package antifraud.servicotransacao.config;
 
 import antifraud.servicotransacao.security.JwtAuthFilter;
-import antifraud.servicotransacao.security.JwtService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +21,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
+    // falta fazer a autorizacao por perfil (ROLE_ADMIN, ROLE_USER) para as rotas de transacao e usuario
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //desabilitar csrf e deixar a aplicação stateless (trazer sempre jwt)
@@ -31,7 +29,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll() //login NAO precisa de token
+                        .requestMatchers(
+                                "/auth/registro",
+                                "/auth/login",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll() //rotas que NAO precisa de token
                         .anyRequest().authenticated()) //qualquer outro endpoint PRECISA de token
                 //executa o filtro JwtAuthFilter antes do UsernamePasswordAuthenticationFilter (filtro do spring security que processa a autenticacao)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

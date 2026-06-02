@@ -20,7 +20,6 @@ public class AutenticacaoService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UsuarioRepository usuarioRepository;
 
     public LoginResponseDTO autenticarUsuario(LoginRequestDTO loginRequest) {
         var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.senha());
