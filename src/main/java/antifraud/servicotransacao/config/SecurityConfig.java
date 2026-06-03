@@ -21,7 +21,6 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    // falta fazer a autorizacao por perfil (ROLE_ADMIN, ROLE_USER) para as rotas de transacao e usuario
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //desabilitar csrf e deixar a aplicação stateless (trazer sempre jwt)
