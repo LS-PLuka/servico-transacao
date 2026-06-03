@@ -5,6 +5,7 @@ import antifraud.servicotransacao.dto.usuario.registro.RegistroRequestDTO;
 import antifraud.servicotransacao.dto.usuario.registro.RegistroResponseDTO;
 import antifraud.servicotransacao.entity.Usuario;
 import antifraud.servicotransacao.enums.PerfilUsuario;
+import antifraud.servicotransacao.exception.EmailJaCadastradoException;
 import antifraud.servicotransacao.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,8 +22,7 @@ public class UsuarioService {
     //usuario faz registro da sua conta
     public RegistroResponseDTO registrarUsuario(RegistroRequestDTO registroRequestDTO) {
         if (usuarioRepository.existsByEmail(registroRequestDTO.email())) {
-            //falta implementar a excecao personalizada
-            throw new IllegalArgumentException("E-mail já registrado");
+            throw new EmailJaCadastradoException("E-mail já registrado");
         }
 
         Usuario usuario = Usuario.builder()
@@ -40,8 +40,7 @@ public class UsuarioService {
     //usuario ADMIN pode registrar outros usuarios, inclusive outros admins
     public RegistroResponseDTO registrarUsuarioPorAdmin(CriarUsuarioAdminRequestDTO criarUsuarioAdminRequestDTO) {
         if (usuarioRepository.existsByEmail(criarUsuarioAdminRequestDTO.email())) {
-            //falta implementar a excecao personalizada
-            throw new IllegalArgumentException("E-mail já registrado");
+            throw new EmailJaCadastradoException("E-mail já registrado");
         }
 
         Usuario usuario = Usuario.builder()
