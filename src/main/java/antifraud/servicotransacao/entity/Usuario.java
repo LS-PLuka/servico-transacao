@@ -18,6 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +35,9 @@ public class Usuario implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false)
+    private String nome;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -43,6 +47,9 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PerfilUsuario perfil;
+
+    @Column(name = "criado_em", nullable = false)
+    private LocalDateTime criadoEm;
 
     //metodos do UserDetails
     @Override
