@@ -1,4 +1,4 @@
-package antifraud.servicotransacao.dto.usuario;
+package antifraud.servicotransacao.dto.usuario.login;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
