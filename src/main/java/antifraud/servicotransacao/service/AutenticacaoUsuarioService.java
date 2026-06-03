@@ -1,25 +1,32 @@
 package antifraud.servicotransacao.service;
 
-import antifraud.servicotransacao.dto.usuario.registro.CriarUsuarioAdminRequestDTO;
+import antifraud.servicotransacao.dto.usuario.login.LoginRequestDTO;
+import antifraud.servicotransacao.dto.usuario.login.LoginResponseDTO;
 import antifraud.servicotransacao.dto.usuario.registro.RegistroRequestDTO;
 import antifraud.servicotransacao.dto.usuario.registro.RegistroResponseDTO;
 import antifraud.servicotransacao.entity.Usuario;
 import antifraud.servicotransacao.enums.PerfilUsuario;
 import antifraud.servicotransacao.exception.EmailJaCadastradoException;
 import antifraud.servicotransacao.repository.UsuarioRepository;
+import antifraud.servicotransacao.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class UsuarioService {
+public class AutenticacaoUsuarioService {
 
+    private final AuthenticationManager authenticationManager;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    //usuario faz registro da sua conta
     public RegistroResponseDTO registrarUsuario(RegistroRequestDTO registroRequestDTO) {
         if (usuarioRepository.existsByEmail(registroRequestDTO.email())) {
             throw new EmailJaCadastradoException("E-mail já registrado");
@@ -37,22 +44,14 @@ public class UsuarioService {
         return toResponseDTO(usuarioSalvo);
     }
 
-    //usuario ADMIN pode registrar outros usuarios, inclusive outros admins
-    public RegistroResponseDTO registrarUsuarioPorAdmin(CriarUsuarioAdminRequestDTO criarUsuarioAdminRequestDTO) {
-        if (usuarioRepository.existsByEmail(criarUsuarioAdminRequestDTO.email())) {
-            throw new EmailJaCadastradoException("E-mail já registrado");
-        }
+    public LoginResponseDTO autenticarUsuario(LoginRequestDTO loginRequest) {
+        var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.senha());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        Usuario usuario = Usuario.builder()
-                .nome(criarUsuarioAdminRequestDTO.nome())
-                .email(criarUsuarioAdminRequestDTO.email())
-                .senha(passwordEncoder.encode(criarUsuarioAdminRequestDTO.senha()))
-                .perfil(criarUsuarioAdminRequestDTO.perfil())
-                .criadoEm(LocalDateTime.now())
-                .build();
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        String token = jwtService.gerarToken(usuario);
 
-        Usuario usuarioSalvo = usuarioRepository.save(usuario);
-        return toResponseDTO(usuarioSalvo);
+        return new LoginResponseDTO(token, "Bearer", usuario.getPerfil().toString());
     }
 
     //metodo auxiliar para converter Usuario em RegistroResponseDTO
