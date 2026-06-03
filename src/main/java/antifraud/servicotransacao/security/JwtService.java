@@ -1,5 +1,6 @@
 package antifraud.servicotransacao.security;
 
+import antifraud.servicotransacao.entity.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -21,8 +22,11 @@ public class JwtService {
 
     //gerar e validar token
     public String gerarToken(UserDetails userDetails) {
+        Usuario usuario = (Usuario) userDetails;
+
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("perfil", usuario.getPerfil().toString())
                 .issuedAt(new Date())
                 .expiration(new Date(
                         System.currentTimeMillis() + expiration)

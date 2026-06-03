@@ -35,6 +35,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll() //rotas que NAO precisa de token
+                        .requestMatchers("/admin/**").hasRole("ADMIN") //rotas que somente o ADMIN acessa
                         .anyRequest().authenticated()) //qualquer outro endpoint PRECISA de token
                 //executa o filtro JwtAuthFilter antes do UsernamePasswordAuthenticationFilter (filtro do spring security que processa a autenticacao)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

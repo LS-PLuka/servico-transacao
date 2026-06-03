@@ -18,6 +18,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
+    //usuario faz registro da sua conta
     public RegistroResponseDTO registrarUsuario(RegistroRequestDTO registroRequestDTO) {
         if (usuarioRepository.existsByEmail(registroRequestDTO.email())) {
             //falta implementar a excecao personalizada
@@ -36,6 +37,7 @@ public class UsuarioService {
         return toResponseDTO(usuarioSalvo);
     }
 
+    //usuario ADMIN pode registrar outros usuarios, inclusive outros admins
     public RegistroResponseDTO registrarUsuarioPorAdmin(CriarUsuarioAdminRequestDTO criarUsuarioAdminRequestDTO) {
         if (usuarioRepository.existsByEmail(criarUsuarioAdminRequestDTO.email())) {
             //falta implementar a excecao personalizada
