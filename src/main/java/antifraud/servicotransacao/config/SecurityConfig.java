@@ -1,5 +1,7 @@
 package antifraud.servicotransacao.config;
 
+import antifraud.servicotransacao.security.AcessoNegadoHandler;
+import antifraud.servicotransacao.security.EntryPointNaoAutorizado;
 import antifraud.servicotransacao.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +38,9 @@ public class SecurityConfig {
                         ).permitAll() //rotas que NAO precisa de token
                         .requestMatchers("/admin/**").hasRole("ADMIN") //rotas que somente o ADMIN acessa
                         .anyRequest().authenticated()) //qualquer outro endpoint PRECISA de token
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(new EntryPointNaoAutorizado())
+                        .accessDeniedHandler(new AcessoNegadoHandler()))
                 //executa o filtro JwtAuthFilter antes do UsernamePasswordAuthenticationFilter (filtro do spring security que processa a autenticacao)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
