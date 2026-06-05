@@ -10,6 +10,7 @@ import antifraud.servicotransacao.exception.EmailJaCadastradoException;
 import antifraud.servicotransacao.repository.UsuarioRepository;
 import antifraud.servicotransacao.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AutenticacaoUsuarioService {
 
     private final AuthenticationManager authenticationManager;
@@ -29,6 +31,7 @@ public class AutenticacaoUsuarioService {
 
     public RegistroResponseDTO registrarUsuario(RegistroRequestDTO registroRequestDTO) {
         if (usuarioRepository.existsByEmail(registroRequestDTO.email())) {
+            log.warn("Tentativa de registro com e-mail já cadastrado: {}", registroRequestDTO.email());
             throw new EmailJaCadastradoException("E-mail já registrado");
         }
 
@@ -41,6 +44,8 @@ public class AutenticacaoUsuarioService {
                 .build();
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+        log.info("Novo usuário registrado: {}", usuarioSalvo.getEmail());
         return toResponseDTO(usuarioSalvo);
     }
 
