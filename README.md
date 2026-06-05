@@ -3,7 +3,7 @@
 Microsserviço responsável por receber, validar e registrar transações financeiras. É o ponto de entrada do [Motor de Análise de Risco de Transações](https://github.com/LS-PLuka/antifraud-system) — um sistema antifraude construído com arquitetura de microsserviços.
 
 <p align="center">
-  <img src="../servico-transacao/src/main/java/antifraud/servicotransacao/docs/banner.png" alt="Serviço de Transação" width="100%">
+  <img src="docs/banner.png" alt="Serviço de Transação" width="100%">
 </p>
 
 ---
