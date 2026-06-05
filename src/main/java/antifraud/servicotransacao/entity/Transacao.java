@@ -39,7 +39,7 @@ public class Transacao {
     @Column(nullable = false, length = 50)
     private String categoria; //Tipo do estabelecimento onde a transação foi feita
 
-    @Column(name = "codigo_pais", nullable = false, precision = 3, length = 3)
+    @Column(name = "codigo_pais", nullable = false, length = 3)
     private String codigoPais; //BRA, USA, ARG
 
     @Enumerated(EnumType.STRING)

@@ -1,4 +1,4 @@
-package antifraud.servicotransacao.dto.usuario;
+package antifraud.servicotransacao.dto.usuario.login;
 
 public record LoginResponseDTO(
     String token,
