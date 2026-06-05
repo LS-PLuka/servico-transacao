@@ -31,7 +31,7 @@ public class AutenticacaoUsuarioService {
 
     public RegistroResponseDTO registrarUsuario(RegistroRequestDTO registroRequestDTO) {
         if (usuarioRepository.existsByEmail(registroRequestDTO.email())) {
-            log.warn("Tentativa de registro com e-mail já cadastrado: {}", registroRequestDTO.email());
+            log.warn("Tentativa de registro com email já cadastrado: {}", registroRequestDTO.email());
             throw new EmailJaCadastradoException("E-mail já registrado");
         }
 
@@ -45,7 +45,7 @@ public class AutenticacaoUsuarioService {
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
-        log.info("Novo usuário registrado: {}", usuarioSalvo.getEmail());
+        log.info("Novo usuario registrado: {}", usuarioSalvo.getEmail());
         return toResponseDTO(usuarioSalvo);
     }
 
@@ -56,6 +56,7 @@ public class AutenticacaoUsuarioService {
         Usuario usuario = (Usuario) authentication.getPrincipal();
         String token = jwtService.gerarToken(usuario);
 
+        log.info("Usuario autenticado: Email={}, Perfil={}", usuario.getEmail(), usuario.getPerfil());
         return new LoginResponseDTO(token, "Bearer", usuario.getPerfil().toString());
     }
 

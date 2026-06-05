@@ -55,7 +55,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     // contexto do Spring para autenticar o usuario - SecurityContextHolder
                     // setAuthentication recebe authToken e passa a ser autenticado
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    logger.info("Usuario autenticado com sucesso: " + username);
                 }
             }
         } catch (ExpiredJwtException e) {

@@ -27,6 +27,13 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponseDTO(404, "Não encontrado", ex.getMessage()));
     }
 
+    @ExceptionHandler(UsuarioNaoEncontradoException.class)
+    public ResponseEntity<ErroResponseDTO> handleUsuarioNaoEncontrado(UsuarioNaoEncontradoException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErroResponseDTO(404, "Não encontrado", ex.getMessage()));
+    }
+
     @ExceptionHandler(AcessoNegadoException.class)
     public ResponseEntity<ErroResponseDTO> handleAcessoNegado(AcessoNegadoException ex) {
         return ResponseEntity
