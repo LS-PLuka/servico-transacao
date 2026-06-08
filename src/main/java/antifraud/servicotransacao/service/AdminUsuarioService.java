@@ -32,7 +32,7 @@ public class AdminUsuarioService {
     //usuario ADMIN pode registrar outros usuarios, inclusive outros admins
     public RegistroResponseDTO registrarUsuarioPorAdmin(CriarUsuarioAdminRequestDTO criarUsuarioAdminRequestDTO) {
         if (usuarioRepository.existsByEmail(criarUsuarioAdminRequestDTO.email())) {
-            log.warn("Tentativa de registro de usuario por admin com email já registrado: {}", criarUsuarioAdminRequestDTO.email());
+            log.warn("Tentativa de registro de usuario por ADMIN com email ja registrado: {}", criarUsuarioAdminRequestDTO.email());
             throw new EmailJaCadastradoException("E-mail já registrado");
         }
 
@@ -46,7 +46,7 @@ public class AdminUsuarioService {
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
-        log.info("Usuario registrado por admin: Email={}, Perfil={}", usuarioSalvo.getEmail(), usuarioSalvo.getPerfil());
+        log.info("Usuario registrado por ADMIN: Email={}, Perfil={}", usuarioSalvo.getEmail(), usuarioSalvo.getPerfil());
         return toResponseDTO(usuarioSalvo);
     }
 
