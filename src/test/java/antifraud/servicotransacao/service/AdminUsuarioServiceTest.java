@@ -84,7 +84,7 @@ public class AdminUsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deve registrar usuario com sucesso quando os dados sao validos")
+    @DisplayName("Deve lançar EmailJaCadastradoException quando email ja existe")
     void registrarUsuarioPorAdmin_emailDuplicado_deveRetornarExcecao() {
         when(usuarioRepository.existsByEmail(request.email())).thenReturn(true);
 
