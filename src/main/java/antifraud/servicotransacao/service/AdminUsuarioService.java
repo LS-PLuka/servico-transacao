@@ -8,6 +8,7 @@ import antifraud.servicotransacao.exception.UsuarioNaoEncontradoException;
 import antifraud.servicotransacao.repository.UsuarioRepository;
 import antifraud.servicotransacao.util.PaginaResponseDTO;
 import antifraud.servicotransacao.util.PaginaResponseMapper;
+import antifraud.servicotransacao.util.UsuarioMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static antifraud.servicotransacao.util.UsuarioMapper.toResponseDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +32,7 @@ public class AdminUsuarioService {
     //usuario ADMIN pode registrar outros usuarios, inclusive outros admins
     public RegistroResponseDTO registrarUsuarioPorAdmin(CriarUsuarioAdminRequestDTO criarUsuarioAdminRequestDTO) {
         if (usuarioRepository.existsByEmail(criarUsuarioAdminRequestDTO.email())) {
-            log.warn("Tentativa de registro de usuario por admin com email já registrado: {}", criarUsuarioAdminRequestDTO.email());
+            log.warn("Tentativa de registro de usuario por ADMIN com email ja registrado: {}", criarUsuarioAdminRequestDTO.email());
             throw new EmailJaCadastradoException("E-mail já registrado");
         }
 
@@ -43,7 +46,7 @@ public class AdminUsuarioService {
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
 
-        log.info("Usuario registrado por admin: Email={}, Perfil={}", usuarioSalvo.getEmail(), usuarioSalvo.getPerfil());
+        log.info("Usuario registrado por ADMIN: Email={}, Perfil={}", usuarioSalvo.getEmail(), usuarioSalvo.getPerfil());
         return toResponseDTO(usuarioSalvo);
     }
 
@@ -61,16 +64,5 @@ public class AdminUsuarioService {
 
         log.info("Listando usuarios: Pagina={}, Total de usuarios={}", pagina, usuarios.getTotalElements());
         return PaginaResponseMapper.fromPage(usuarios.map(usuario -> toResponseDTO(usuario)));
-    }
-
-    //metodo auxiliar para converter Usuario em RegistroResponseDTO
-    private RegistroResponseDTO toResponseDTO(Usuario usuario) {
-        return new RegistroResponseDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                usuario.getPerfil().toString(),
-                usuario.getCriadoEm()
-        );
     }
 }

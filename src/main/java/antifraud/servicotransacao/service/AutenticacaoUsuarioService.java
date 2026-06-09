@@ -16,8 +16,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+
+import static antifraud.servicotransacao.util.UsuarioMapper.toResponseDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -58,16 +59,5 @@ public class AutenticacaoUsuarioService {
 
         log.info("Usuario autenticado: Email={}, Perfil={}", usuario.getEmail(), usuario.getPerfil());
         return new LoginResponseDTO(token, "Bearer", usuario.getPerfil().toString());
-    }
-
-    //metodo auxiliar para converter Usuario em RegistroResponseDTO
-    private RegistroResponseDTO toResponseDTO(Usuario usuario) {
-        return new RegistroResponseDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                usuario.getPerfil().toString(),
-                usuario.getCriadoEm()
-        );
     }
 }
