@@ -3,6 +3,7 @@ package antifraud.servicotransacao.service;
 import antifraud.servicotransacao.dto.transacao.TransacaoRequestDTO;
 import antifraud.servicotransacao.dto.transacao.TransacaoResponseDTO;
 import antifraud.servicotransacao.entity.Transacao;
+import antifraud.servicotransacao.exception.TransacaoNaoEncontradaException;
 import antifraud.servicotransacao.messaging.TransacaoPublisher;
 import antifraud.servicotransacao.repository.TransacaoRepository;
 import antifraud.servicotransacao.util.TransacaoMapper;
@@ -10,6 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+
+import static antifraud.servicotransacao.util.TransacaoMapper.toResponseDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,15 @@ public class TransacaoService {
                 transacaoSalva.getId(),
                 transacaoSalva.getContaId());
 
-        return TransacaoMapper.toResponseDTO(transacaoSalva);
+        return toResponseDTO(transacaoSalva);
+    }
+
+    @Transactional(readOnly = true)
+    public TransacaoResponseDTO buscarTransacaoPorId(UUID id) {
+        Transacao transacao = transacaoRepository.findById(id)
+                .orElseThrow(() -> new TransacaoNaoEncontradaException("Transação não encontrada"));
+
+        log.info("Transação encontrada: ID={}, Conta={}", transacao.getId(), transacao.getContaId());
+        return toResponseDTO(transacao);
     }
 }
