@@ -41,8 +41,20 @@ public class TransacaoService {
     // incluindo falhas ao publicar o evento no RabbitMQ
     @Transactional
     public TransacaoResponseDTO registrarTransacao(TransacaoRequestDTO requestDTO) {
+        // busca usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
+        // verifica se é ADMIN
+        boolean isAdmin = usuarioLogado.getPerfil().name().equals("ADMIN");
+        if (isAdmin) {
+            log.warn("Tentativa de registro de transação por usuário ADMIN: UsuarioLogado={}", usuarioLogado.getId());
+            throw new AcessoNegadoException("Usuários com perfil ADMIN não podem registrar transações");
+        }
+
         Transacao transacao = TransacaoMapper.toEntity(requestDTO);
 
+        // registra a transacao
         Transacao transacaoSalva = transacaoRepository.save(transacao);
         transacaoPublisher.publicarTransacao(TransacaoMapper.toEventoDTO(transacaoSalva));
 
@@ -82,6 +94,7 @@ public class TransacaoService {
             throw new AcessoNegadoException("Você não tem permissão para acessar as transações de outra conta");
         }
 
+        // busca e retorna as transacoes
         Pageable pageable = PageRequest.of(pagina, 10);
         Page<Transacao> transacoesPage = transacaoRepository.findByContaId(contaId, pageable);
 
