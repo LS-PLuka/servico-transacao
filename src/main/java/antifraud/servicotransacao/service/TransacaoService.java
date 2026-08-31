@@ -45,23 +45,20 @@ public class TransacaoService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
 
-        // verifica se é ADMIN
         boolean isAdmin = usuarioLogado.getPerfil().name().equals("ADMIN");
         if (isAdmin) {
             log.warn("Tentativa de registro de transação por usuário ADMIN: UsuarioLogado={}", usuarioLogado.getId());
             throw new AcessoNegadoException("Usuários com perfil ADMIN não podem registrar transações");
         }
 
-        // verifica se é a conta do usuario logado
         boolean isContaDoUsuarioLogado = usuarioLogado.getId().equals(requestDTO.contaId());
         if (!isContaDoUsuarioLogado) {
-            log.warn("Tentativa de registro de transação para outra conta: Conta={}, UsuarioLogado={}", requestDTO.contaId(), usuarioLogado.getId());
+            log.warn("Tentativa de registro de transação para outra conta: Conta={}, UsuarioLogado={}",
+                    requestDTO.contaId(), usuarioLogado.getId());
             throw new AcessoNegadoException("Você não tem permissão para registrar transações para outra conta");
         }
 
         Transacao transacao = TransacaoMapper.toEntity(requestDTO);
-
-        // registra a transacao
         Transacao transacaoSalva = transacaoRepository.save(transacao);
         transacaoPublisher.publicarTransacao(TransacaoMapper.toEventoDTO(transacaoSalva));
 
@@ -83,18 +80,23 @@ public class TransacaoService {
 
         boolean isAdmin = usuarioLogado.getPerfil().name().equals("ADMIN");
         boolean isContaDoUsuarioLogado = usuarioLogado.getId().equals(contaId);
+
         // se o usuario logado nao for ADMIN e contaId nao for dele,
         // ele nao tem permissao para acessar
         if (!isContaDoUsuarioLogado && !isAdmin) {
-            log.warn("Tentativa de acesso não autorizado à transação de outra conta: Conta={}, UsuarioLogado={}", contaId, usuarioLogado.getId());
+            log.warn("Tentativa de acesso não autorizado à transação de outra conta: Conta={}, UsuarioLogado={}",
+                    contaId, usuarioLogado.getId());
             throw new AcessoNegadoException("Você não tem permissão para acessar as transações de outra conta");
         }
 
         Transacao transacao = transacaoRepository.findById(id)
                 .orElseThrow(() -> new TransacaoNaoEncontradaException("Transação não encontrada"));
 
+        // se a transacao nao pertencer a conta do usuario logado,
+        // ele nao tem permissao para acessar
         if (!transacao.getContaId().equals(contaId)) {
-            log.warn("Tentativa de acesso não autorizado à transação de outra conta: Conta={}, UsuarioLogado={}", contaId, usuarioLogado.getId());
+            log.warn("Tentativa de acesso não autorizado à transação de outra conta: Conta={}, UsuarioLogado={}",
+                    contaId, usuarioLogado.getId());
             throw new AcessoNegadoException("Você não tem permissão para acessar as transações de outra conta");
         }
 
@@ -111,13 +113,14 @@ public class TransacaoService {
         Usuario usuario = usuarioRepository.findById(contaId)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 
-        // verifica tipo de perfil
         boolean isAdmin = usuarioLogado.getPerfil().name().equals("ADMIN");
         boolean isContaDoUsuarioLogado = usuarioLogado.getId().equals(contaId);
+
         // se o usuario logado nao for ADMIN e contaId nao for dele,
         // ele nao tem permissao para acessar
         if (!isContaDoUsuarioLogado && !isAdmin) {
-            log.warn("Tentativa de acesso não autorizado às transações de outra conta: Conta={}, UsuarioLogado={}", contaId, usuarioLogado.getId());
+            log.warn("Tentativa de acesso não autorizado às transações de outra conta: Conta={}, UsuarioLogado={}",
+                    contaId, usuarioLogado.getId());
             throw new AcessoNegadoException("Você não tem permissão para acessar as transações de outra conta");
         }
 
@@ -125,7 +128,8 @@ public class TransacaoService {
         Pageable pageable = PageRequest.of(pagina, 10);
         Page<Transacao> transacoesPage = transacaoRepository.findByContaId(contaId, pageable);
 
-        log.info("Listando transações para a conta: Conta={}, Pagina={}, TotalTransacoes={}", contaId, pagina, transacoesPage.getTotalElements());
+        log.info("Listando transações para a conta: Conta={}, Pagina={}, TotalTransacoes={}",
+                contaId, pagina, transacoesPage.getTotalElements());
         return PaginaResponseMapper.fromPage(transacoesPage.map(transacao -> toResponseDTO(transacao)));
     }
 }
