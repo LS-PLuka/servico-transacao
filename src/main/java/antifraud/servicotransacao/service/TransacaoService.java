@@ -66,16 +66,7 @@ public class TransacaoService {
     }
 
     @Transactional(readOnly = true)
-    public TransacaoResponseDTO buscarTransacaoPorId(UUID id) {
-        Transacao transacao = transacaoRepository.findById(id)
-                .orElseThrow(() -> new TransacaoNaoEncontradaException("Transação não encontrada"));
-
-        log.info("Transação encontrada: ID={}, Conta={}", transacao.getId(), transacao.getContaId());
-        return toResponseDTO(transacao);
-    }
-
-    @Transactional(readOnly = true)
-    public PaginaResponseDTO<TransacaoResponseDTO> listarTransacoesDeUmaConta(UUID contaId, String token, int pagina) {
+    public TransacaoResponseDTO buscarTransacaoPorId(UUID id, UUID contaId) {
         // busca usuario autenticado
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
@@ -85,8 +76,31 @@ public class TransacaoService {
 
         // verifica tipo de perfil
         boolean isAdmin = usuarioLogado.getPerfil().name().equals("ADMIN");
-        boolean isContaDoUsuario = usuario.getId().equals(usuarioLogado.getId());
+        // se o usuario logado nao for ADMIN e contaId nao for dele,
+        // ele nao tem permissao para acessar
+        if (contaId != usuarioLogado.getId() && !isAdmin) {
+            log.warn("Tentativa de acesso não autorizado à transação de outra conta: Conta={}, UsuarioLogado={}", contaId, usuarioLogado.getId());
+            throw new AcessoNegadoException("Você não tem permissão para acessar as transações de outra conta");
+        }
 
+        Transacao transacao = transacaoRepository.findById(id)
+                .orElseThrow(() -> new TransacaoNaoEncontradaException("Transação não encontrada"));
+
+        log.info("Transação encontrada: ID={}, Conta={}", transacao.getId(), transacao.getContaId());
+        return toResponseDTO(transacao);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginaResponseDTO<TransacaoResponseDTO> listarTransacoesDeUmaConta(UUID contaId, int pagina) {
+        // busca usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
+        Usuario usuario = usuarioRepository.findById(contaId)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
+
+        // verifica tipo de perfil
+        boolean isAdmin = usuarioLogado.getPerfil().name().equals("ADMIN");
         // se o usuario logado nao for ADMIN e contaId nao for dele,
         // ele nao tem permissao para acessar
         if (contaId != usuarioLogado.getId() && !isAdmin) {
