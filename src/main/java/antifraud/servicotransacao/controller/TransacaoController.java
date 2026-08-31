@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -40,6 +41,14 @@ public class TransacaoController {
         log.info("Tentativa de busca de transação por ID: {} e contaId: {}", id, contaId);
 
         TransacaoResponseDTO response = transacaoService.buscarTransacaoPorId(id, contaId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/conta/{contaId}")
+    public ResponseEntity<PaginaResponseDTO<TransacaoResponseDTO>> listarTransacoesDeUmaConta(@PathVariable UUID contaId, @RequestParam(defaultValue = "0") int pagina) {
+        log.info("Tentativa de listagem de transações para conta com ID: {}", contaId);
+
+        PaginaResponseDTO<TransacaoResponseDTO> response = transacaoService.listarTransacoesDeUmaConta(contaId, pagina);
         return ResponseEntity.ok(response);
     }
 }
