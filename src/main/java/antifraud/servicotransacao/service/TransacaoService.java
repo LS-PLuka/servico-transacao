@@ -40,7 +40,7 @@ public class TransacaoService {
     // garante rollback caso ocorra qualquer exceçao durante o processamento,
     // incluindo falhas ao publicar o evento no RabbitMQ
     @Transactional
-    public TransacaoResponseDTO registrarTransacao(TransacaoRequestDTO requestDTO) {
+    public TransacaoResponseDTO efetuarTransacao(TransacaoRequestDTO requestDTO) {
         // busca usuario autenticado
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
