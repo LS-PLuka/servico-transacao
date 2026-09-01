@@ -1,0 +1,54 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: antifraude-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: antifraude
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: antifraude-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  servico-transacao:
+    build: .
+    container_name: servico-transacao
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/antifraude
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+
+      JWT_SECRET: chave-secreta-local-minimo-256-bits-aqui
+      JWT_EXPIRACAO: 86400000
+
+      ADMIN_EMAIL: admin@antifraude.com
+      ADMIN_SENHA: admin123456
+      ADMIN_NOME: Administrador
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:

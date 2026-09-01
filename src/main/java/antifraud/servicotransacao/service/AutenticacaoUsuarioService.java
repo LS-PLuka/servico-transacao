@@ -16,6 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 
 import static antifraud.servicotransacao.util.UsuarioMapper.toResponseDTO;
@@ -30,6 +32,7 @@ public class AutenticacaoUsuarioService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    @Transactional
     public RegistroResponseDTO registrarUsuario(RegistroRequestDTO registroRequestDTO) {
         if (usuarioRepository.existsByEmail(registroRequestDTO.email())) {
             log.warn("Tentativa de registro com email já cadastrado: {}", registroRequestDTO.email());
@@ -50,6 +53,7 @@ public class AutenticacaoUsuarioService {
         return toResponseDTO(usuarioSalvo);
     }
 
+    @Transactional
     public LoginResponseDTO autenticarUsuario(LoginRequestDTO loginRequest) {
         var authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.senha());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);

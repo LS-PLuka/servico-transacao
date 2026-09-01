@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -30,6 +32,7 @@ public class AdminUsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     //usuario ADMIN pode registrar outros usuarios, inclusive outros admins
+    @Transactional
     public RegistroResponseDTO registrarUsuarioPorAdmin(CriarUsuarioAdminRequestDTO criarUsuarioAdminRequestDTO) {
         if (usuarioRepository.existsByEmail(criarUsuarioAdminRequestDTO.email())) {
             log.warn("Tentativa de registro de usuario por ADMIN com email ja registrado: {}", criarUsuarioAdminRequestDTO.email());
@@ -50,6 +53,7 @@ public class AdminUsuarioService {
         return toResponseDTO(usuarioSalvo);
     }
 
+    @Transactional(readOnly = true)
     public RegistroResponseDTO buscarUsuarioPorId(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
@@ -58,6 +62,7 @@ public class AdminUsuarioService {
         return toResponseDTO(usuario);
     }
 
+    @Transactional(readOnly = true)
     public PaginaResponseDTO<RegistroResponseDTO> listarTodosUsuarios(int pagina) {
         Pageable pageable = PageRequest.of(pagina, 10);
         Page<Usuario> usuarios = usuarioRepository.findAll(pageable);
