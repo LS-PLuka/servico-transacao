@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Transacao {
 
     @Id
@@ -37,7 +39,7 @@ public class Transacao {
     private BigDecimal valor;
 
     @Column(nullable = false, length = 50)
-    private String categoria; //Tipo do estabelecimento onde a transação foi feita
+    private String categoria; // tipo do estabelecimento onde a transaçao foi feita
 
     @Column(name = "codigo_pais", nullable = false, length = 3)
     private String codigoPais; //BRA, USA, ARG

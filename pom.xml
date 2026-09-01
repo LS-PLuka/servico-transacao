@@ -78,6 +78,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- ===== Mensageria ===== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <!-- ===== Documentação — Swagger / OpenAPI ===== -->
         <dependency>
             <groupId>org.springdoc</groupId>
