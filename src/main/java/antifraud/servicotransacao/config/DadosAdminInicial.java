@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Profile("!test")
 //essa classe foi criada para implementaçao de um Usuario ADMIN inicial
 //esse ADMIN é carregado automaticamente no banco de dados quando a aplicação é iniciada, caso ele ainda não exista
 //em caso de duvida, recomendo que leia a documentaçao para melhor entendimento!!!
