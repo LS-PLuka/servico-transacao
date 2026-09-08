@@ -23,6 +23,16 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
+    private static final String[] ROTAS_PUBLICAS = {
+            "/auth/registro",
+            "/auth/login",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/v3/api-docs.yaml"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //desabilitar csrf e deixar a aplicação stateless (trazer sempre jwt)
@@ -30,12 +40,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/auth/registro",
-                                "/auth/login",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll() //rotas que NAO precisa de token
+                        .requestMatchers(ROTAS_PUBLICAS).permitAll() //rotas que NAO precisa de token
                         .requestMatchers("/admin/**").hasRole("ADMIN") //rotas que somente o ADMIN acessa
                         .anyRequest().authenticated()) //qualquer outro endpoint PRECISA de token
                 .exceptionHandling(ex -> ex
