@@ -8,6 +8,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 
+import java.time.Duration;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public abstract class IntegracaoBaseTest {
@@ -16,7 +18,8 @@ public abstract class IntegracaoBaseTest {
             new PostgreSQLContainer<>("postgres:16-alpine");
 
     static final RabbitMQContainer RABBITMQ =
-            new RabbitMQContainer("rabbitmq:3.13-management-alpine");
+            new RabbitMQContainer("rabbitmq:3.13-management-alpine")
+                    .withStartupTimeout(Duration.ofMinutes(2));
 
     static {
         POSTGRES.start();
