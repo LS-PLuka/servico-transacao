@@ -1,4 +1,4 @@
-package integration;
+package antifraud.servicotransacao.integration;
 
 import antifraud.servicotransacao.dto.transacao.TransacaoRequestDTO;
 import antifraud.servicotransacao.dto.usuario.login.LoginRequestDTO;

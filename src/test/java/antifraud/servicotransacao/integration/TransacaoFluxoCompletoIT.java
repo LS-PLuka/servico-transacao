@@ -1,4 +1,4 @@
-package integration;
+package antifraud.servicotransacao.integration;
 
 import antifraud.servicotransacao.config.RabbitMQConfig;
 import antifraud.servicotransacao.dto.transacao.TransacaoRequestDTO;
@@ -130,10 +130,15 @@ class TransacaoFluxoCompletoIT extends IntegracaoBaseTest {
 
             JsonNode evento = objectMapper.readTree(mensagem.getBody());
 
-            assertThat(UUID.fromString(evento.get("id").asText())).isEqualTo(transacaoId);
-            assertThat(UUID.fromString(evento.get("contaId").asText())).isEqualTo(contaId);
+            assertThat(UUID.fromString(evento.get("transacaoId").asText()))
+                    .isEqualTo(transacaoId);
+            assertThat(UUID.fromString(evento.get("contaId").asText()))
+                    .isEqualTo(contaId);
             assertThat(new BigDecimal(evento.get("valor").asText()))
                     .isEqualByComparingTo("150.75");
+            assertThat(evento.get("categoria").asText()).isEqualTo("RESTAURANTE");
+            assertThat(evento.get("codigoPais").asText()).isEqualTo("BRA");
+            assertThat(evento.get("dataHora")).isNotNull();
         });
 
         ResponseEntity<String> respBusca = restTemplate.exchange(
