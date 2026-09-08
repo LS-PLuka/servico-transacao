@@ -4,6 +4,7 @@ import antifraud.servicotransacao.dto.erros.ErroResponseDTO;
 import antifraud.servicotransacao.dto.erros.ErroValidacaoResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -46,6 +47,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new ErroResponseDTO(422, "Status inválido", ex.getMessage()));
+    }
+
+    //lancado pelo AuthenticationManager quando email ou senha estao incorretos
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErroResponseDTO> handleCredenciaisInvalidas(BadCredentialsException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErroResponseDTO(401, "Não autorizado", "E-mail ou senha inválidos"));
     }
 
     //lancado pelo spring quando uma validacao do DTO falha - @NotBlank, @Email, etc
