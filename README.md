@@ -281,11 +281,14 @@ Payload (`TransacaoEventoDTO`, serializado via `Jackson2JsonMessageConverter`):
   "valor": 150.75,
   "categoria": "RESTAURANTE",
   "codigoPais": "BRA",
-  "dataHora": "2026-09-08T14:30:01"
+  "dataHora": "2026-09-08T14:30:01",
+  "contaCriadaEm": "2026-08-20T10:15:00"
 }
 ```
 
 O evento **não carrega o `status`** — seria redundante, já que toda transação publicada está `PENDENTE` por definição. É o consumidor que decide o próximo estado.
+
+O campo `contaCriadaEm` permite que o motor de risco avalie a idade da conta sem acessar o banco de dados deste serviço. O histórico de transações por conta é mantido pelo próprio consumidor a partir de `contaId` e `dataHora`.
 
 ---
 

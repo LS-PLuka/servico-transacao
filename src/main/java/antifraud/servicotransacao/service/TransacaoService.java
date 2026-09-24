@@ -60,7 +60,7 @@ public class TransacaoService {
 
         Transacao transacao = TransacaoMapper.toEntity(requestDTO);
         Transacao transacaoSalva = transacaoRepository.save(transacao);
-        transacaoPublisher.publicarTransacao(TransacaoMapper.toEventoDTO(transacaoSalva));
+        transacaoPublisher.publicarTransacao(TransacaoMapper.toEventoDTO(transacaoSalva, usuarioLogado));
 
         log.info("Transação registrada: ID={}, Conta={}",
                 transacaoSalva.getId(),
