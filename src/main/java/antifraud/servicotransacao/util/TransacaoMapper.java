@@ -4,6 +4,7 @@ import antifraud.servicotransacao.dto.transacao.TransacaoEventoDTO;
 import antifraud.servicotransacao.dto.transacao.TransacaoRequestDTO;
 import antifraud.servicotransacao.dto.transacao.TransacaoResponseDTO;
 import antifraud.servicotransacao.entity.Transacao;
+import antifraud.servicotransacao.entity.Usuario;
 import antifraud.servicotransacao.enums.StatusTransacao;
 
 import java.time.LocalDateTime;
@@ -36,14 +37,15 @@ public class TransacaoMapper {
         );
     }
 
-    public static TransacaoEventoDTO toEventoDTO(Transacao transacao) {
+    public static TransacaoEventoDTO toEventoDTO(Transacao transacao, Usuario usuario) {
         return new TransacaoEventoDTO(
                 transacao.getId(),
                 transacao.getContaId(),
                 transacao.getValor(),
                 transacao.getCategoria(),
                 transacao.getCodigoPais(),
-                transacao.getCriadoEm()
+                transacao.getCriadoEm(),
+                usuario.getCriadoEm()
         );
     }
 }

@@ -5,6 +5,7 @@ import antifraud.servicotransacao.dto.transacao.TransacaoRequestDTO;
 import antifraud.servicotransacao.dto.usuario.login.LoginRequestDTO;
 import antifraud.servicotransacao.dto.usuario.registro.RegistroRequestDTO;
 import antifraud.servicotransacao.entity.Transacao;
+import antifraud.servicotransacao.entity.Usuario;
 import antifraud.servicotransacao.enums.StatusTransacao;
 import antifraud.servicotransacao.repository.TransacaoRepository;
 import antifraud.servicotransacao.repository.UsuarioRepository;
@@ -74,6 +75,7 @@ class TransacaoFluxoCompletoIT extends IntegracaoBaseTest {
 
         JsonNode corpoRegistro = objectMapper.readTree(respRegistro.getBody());
         UUID contaId = UUID.fromString(corpoRegistro.get("id").asText());
+        Usuario usuario = usuarioRepository.findById(contaId).orElseThrow();
 
         assertThat(corpoRegistro.get("email").asText()).isEqualTo(EMAIL);
         assertThat(corpoRegistro.get("perfil").asText()).isEqualTo("USUARIO");
@@ -107,8 +109,9 @@ class TransacaoFluxoCompletoIT extends IntegracaoBaseTest {
 
         assertThat(respTransacao.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        UUID transacaoId = UUID.fromString(
-                objectMapper.readTree(respTransacao.getBody()).get("id").asText());
+        JsonNode corpoTransacao = objectMapper.readTree(respTransacao.getBody());
+        UUID transacaoId = UUID.fromString(corpoTransacao.get("id").asText());
+        LocalDateTime transacaoCriadaEm = LocalDateTime.parse(corpoTransacao.get("criadoEm").asText());
 
         List<Transacao> transacoes = transacaoRepository.findAll();
         assertThat(transacoes).hasSize(1);
@@ -138,7 +141,10 @@ class TransacaoFluxoCompletoIT extends IntegracaoBaseTest {
                     .isEqualByComparingTo("150.75");
             assertThat(evento.get("categoria").asText()).isEqualTo("RESTAURANTE");
             assertThat(evento.get("codigoPais").asText()).isEqualTo("BRA");
-            assertThat(evento.get("dataHora")).isNotNull();
+            assertThat(LocalDateTime.parse(evento.get("dataHora").asText()))
+                    .isEqualTo(transacaoCriadaEm);
+            assertThat(LocalDateTime.parse(evento.get("contaCriadaEm").asText()))
+                    .isEqualTo(usuario.getCriadoEm());
         });
 
         ResponseEntity<String> respBusca = restTemplate.exchange(

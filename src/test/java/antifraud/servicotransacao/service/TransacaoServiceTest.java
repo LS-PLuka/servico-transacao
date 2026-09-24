@@ -1,5 +1,6 @@
 package antifraud.servicotransacao.service;
 
+import antifraud.servicotransacao.dto.transacao.TransacaoEventoDTO;
 import antifraud.servicotransacao.dto.transacao.TransacaoRequestDTO;
 import antifraud.servicotransacao.dto.transacao.TransacaoResponseDTO;
 import antifraud.servicotransacao.entity.Transacao;
@@ -117,7 +118,15 @@ class TransacaoServiceTest {
         assertEquals(transacao.getStatus(), response.status());
 
         verify(transacaoRepository).save(any(Transacao.class));
-        verify(transacaoPublisher).publicarTransacao(any());
+        verify(transacaoPublisher).publicarTransacao(new TransacaoEventoDTO(
+                transacao.getId(),
+                transacao.getContaId(),
+                transacao.getValor(),
+                transacao.getCategoria(),
+                transacao.getCodigoPais(),
+                transacao.getCriadoEm(),
+                usuario.getCriadoEm()
+        ));
     }
 
     @Test
