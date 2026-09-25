@@ -26,7 +26,6 @@ Este serviço **não analisa risco**. A responsabilidade dele é receber, valida
 - [Evento publicado](#evento-publicado)
 - [Decisões de arquitetura e trade-offs](#decisões-de-arquitetura-e-trade-offs)
 - [Testes](#testes)
-- [Limitações conhecidas](#limitações-conhecidas)
 - [Stack](#stack)
 - [Configuração](#configuração)
 - [Estrutura do projeto](#estrutura-do-projeto)
@@ -375,20 +374,6 @@ A ausência de `@Testcontainers`/`@Container` é deliberada: aquela extension ge
 ### CI
 
 GitHub Actions em todo push e PR para `develop` e `main`: Java 21 (Temurin), cache Maven, `mvn -B verify` com Testcontainers usando o Docker do runner, e publicação dos relatórios de teste como artifact.
-
----
-
-## Limitações conhecidas
-
-Explícitas, porque um serviço financeiro merece honestidade sobre o que ainda não faz:
-
-- **Confiabilidade de mensageria** — sem publisher confirms, retry ou dead-letter queue. Uma falha de broker resulta em `500` e rollback; não há reprocessamento automático.
-- **Sem migrations** — schema gerenciado por `ddl-auto=update` (ver decisão 5).
-- **Paginação sem ordenação** — `PageRequest` sem `Sort`, o que torna a ordem entre páginas não determinística no PostgreSQL.
-- **Sem observabilidade** — nenhum Actuator, métrica ou tracing distribuído. Num sistema de microsserviços, correlation ID entre serviços é requisito, não luxo.
-- **Sem rate limiting nem CORS** — o serviço é o único ponto de entrada público do sistema, o que torna ambos relevantes.
-- **`ADMIN` sem cobertura end-to-end** — os endpoints `/admin/**` têm testes unitários de service, mas nenhum IT autentica como administrador.
-- **Sem refresh token** — expirado o JWT de 24 h, o fluxo é novo login.
 
 ---
 
